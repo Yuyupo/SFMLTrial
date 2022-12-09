@@ -7,6 +7,7 @@ class Sprite;
 class RectShape;
 class Collider;
 class CircleShape;
+class Physics;
 
 struct Scene {
 	static std::vector<GameObject*> _createdObjects;
@@ -17,4 +18,5 @@ struct Scene {
 	static std::vector<RectShape*> createdRects;
 	static std::vector<Collider*> createdColliders;
 	static std::vector<CircleShape*> createdCircles;
+	static std::vector<Physics*> createdPhysics;
 };

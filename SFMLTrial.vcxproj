@@ -140,6 +140,7 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Components\CircleShape.cpp" />
     <ClCompile Include="Components\Collider.cpp" />
+    <ClCompile Include="Components\Physics.cpp" />
     <ClCompile Include="Components\RectShape.cpp" />
     <ClCompile Include="Components\Sprite.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -154,6 +155,8 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Components\CircleShape.h" />
     <ClInclude Include="Components\Collider.h" />
+    <ClInclude Include="Components\Component.h" />
+    <ClInclude Include="Components\Physics.h" />
     <ClInclude Include="Components\RectShape.h" />
     <ClInclude Include="Components\Sprite.h" />
     <ClInclude Include="GameObject.h" />

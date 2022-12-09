@@ -1,25 +1,28 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "Components/Sprite.h"
-#include "Components/RectShape.h"
-#include "Components/Collider.h"
-#include "Components/CircleShape.h"
-
 #include <memory>
 #include <array>
 #include <iostream>
+
+class Sprite;
+class RectShape;
+class Collider;
+class CircleShape;
+class Physics;
+class Component;
 
 class GameObject
 {
 public:
 	GameObject();
 	// TODO: gameobject masolas befejez
-	GameObject(const GameObject& other);
-	GameObject(GameObject&& other);
 
-	GameObject& operator=(const GameObject& other) noexcept;
-	GameObject& operator=(GameObject&& other) noexcept;
+	GameObject(const GameObject& other) = delete;
+	GameObject(GameObject&& other) = delete;
+
+	GameObject& operator=(const GameObject& other) = delete;
+	GameObject& operator=(GameObject&& other) = delete;
 
 	~GameObject();
 
@@ -35,9 +38,13 @@ public:
 	void addCircleComponent();
 	CircleShape* getCircleComponent() const;
 
+	void addPhysicsComponent();
+	Physics* getPhysicsComponent() const;
+
+	void setPosition(const sf::Vector2<float>&);
+
 	uint32_t uniqueId{};
 	sf::Vector2<float> position{ 0, 0 };
-	std::array<Component*, ComponentEnum::SIZE> components;
 private:
 	void allocateId();
 };

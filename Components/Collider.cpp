@@ -2,59 +2,53 @@
 #include <iostream>
 #include <memory>
 
-void Collider::createColliderWithSize(sf::FloatRect bounds) {
-	_collider = bounds;
-
-	_debugRect.setSize({ _collider.width + 3, _collider.height + 3 });
-	_debugRect.setOutlineColor(sf::Color(255, 0, 255));
-	_debugRect.setFillColor(sf::Color::Transparent);
-	_debugRect.setOutlineThickness(3.f);
-	_debugRect.setPosition({ _collider.left, _collider.top });
+Collider::~Collider() {
+	Scene::createdColliders[gameObjectId] = nullptr;
 }
 
-//GameObject that can destroy
+void Collider::createColliderWithSize(const sf::Vector2<float>& size) {
+	_colliderSize = size;
+}
+
 void Collider::makeDestructible() {
 	_isDestructible = true;
 }
 
-// Megadni neki konstruktorba hogy ki olheti meg? wow thats dark
-void Collider::isColliding() {
-	/*
-	if (_collider.intersects(Scene::createdColliders[_enemyId]->_collider)) {
-		std::cout << "Collision detected between: " << _gameObjectID << "," << Scene::createdColliders[_enemyId]->_gameObjectID << std::endl;
-		return true;
-	}
-	*/
-	for (int index = 0; index < Scene::_objectCounter; index++) {
-		if (Scene::createdColliders[index] != nullptr && Scene::createdColliders[index]->_gameObjectId != _gameObjectId) {
-			if (_collider.intersects(Scene::createdColliders[index]->_collider)) {
-				std::cout << "Collision detected between: " << _gameObjectID << "," << Scene::createdColliders[index]->_gameObjectID << std::endl;
+void Collider::interactsWithVector(const std::vector<GameObject*>& interactions) {
+	_interactsWith.resize(0);
 
-				delete Scene::_createdObjects[index];
+	for (auto* object : interactions) {
+		_interactsWith.push_back(object->uniqueId);
+	}
+}
+
+std::vector<Collider*> Collider::isColliding() {
+	std::vector<Collider*> colls;
+	// mivel mindig updatel a gameobject position
+	// ezert annak a positionje alapjan csinalunk uj collidert, majd csekk
+	// igy nem kell a collidert mozgatni
+	sf::FloatRect thisCollider = getColliderBounds();
+	for (int index = 0; index < _interactsWith.size(); index++) {
+		Collider* collider = Scene::createdColliders[_interactsWith[index]];
+		if (collider != nullptr && collider->gameObjectId != gameObjectId) {
+			if (thisCollider.intersects(collider->getColliderBounds())) {
+				colls.push_back(collider);
 			}
 		}
 	}
-}
-
-void Collider::updatePosition() {
-	float offsetX = Scene::_createdObjects[_gameObjectId]->position.x - _collider.left;
-	_collider.left = Scene::_createdObjects[_gameObjectId]->position.x;
-	_collider.top = Scene::_createdObjects[_gameObjectId]->position.y;
-	_debugRect.move({ offsetX, 0.f });
+	return colls;
 }
 
 void Collider::DrawDebug(sf::RenderWindow& window) {
+	sf::RectangleShape debugRect({ _colliderSize.x + 3, _colliderSize.y + 3 });
+	debugRect.setOutlineColor(sf::Color(255, 0, 255));
+	debugRect.setFillColor(sf::Color::Transparent);
+	debugRect.setOutlineThickness(3.f);
 
-	// TODO: need another way to check for collision
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
-		sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-		updatePosition();
-		isColliding();
-	}
-	window.draw(_debugRect);
+	debugRect.setPosition({ getPosition().x - 1.5f, getPosition().y - 1.5f });
+	window.draw(debugRect);
 }
 
-Collider::~Collider() {
-	Scene::createdColliders[_gameObjectId] = nullptr;
-	delete Scene::createdColliders[_gameObjectId];
+sf::FloatRect Collider::getColliderBounds() {
+	return sf::FloatRect(getPosition().x, getPosition().y, _colliderSize.x, _colliderSize.y);
 }
